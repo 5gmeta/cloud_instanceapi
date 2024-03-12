@@ -1,0 +1,11 @@
+title Cloud Instance API
+actor user
+participant Dataflow as dataflow
+participant Cloud Instance API as api
+participant MEC pipelines as mec
+
+
+user->dataflow: Set data query \n <area, type, intance type>
+dataflow->api: Request deployment of data pipeline \n with computing resources from \n <instance type>
+api->mec: Do container download, signature check and deploy \n according to resources from \n <instance type>
+mec->mec: Run data pipeline and monitor activity

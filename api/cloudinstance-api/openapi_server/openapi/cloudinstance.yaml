@@ -1,0 +1,452 @@
+openapi: 3.0.3
+info:
+  title: Cloud Instance API
+  description: "API to manage pipeline instances and instace types in different 5GMETA\
+    \ MEC Servers. \nCloud components. The Instance API has the scope to consent the\
+    \ request of a \npipeline instance and receive the confirmation of the instance\
+    \ deployment. \nAn instance can be deleted, but not be modified or updated.\""
+  contact:
+    name: 5GMETA
+    url: https://5gmeta-project.eu/"
+    email: 5gmeta@vicomtech.org
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about 5GMETA
+  url: https://5gmeta-project.eu/
+servers:
+- url: http://5gmeta-platform.eu/cloudinstance-api
+- url: https://5gmeta-platform.eu/cloudinstance-api
+tags:
+- name: types
+  description: Operations about instance types
+- name: instances
+  description: Operations about pipeline instances
+paths:
+  /mecs/{mec_id}/types:
+    get:
+      tags:
+      - types
+      summary: Get instance types in a specific MEC
+      operationId: get_types
+      parameters:
+      - name: mec_id
+        in: path
+        description: Specify the MEC id to get the information from a specific server
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstanceType'
+        "414":
+          description: Edge server not found
+        "415":
+          description: Edge Instance API not avalaible in specified server
+        "510":
+          description: Failed to establish connection with Edge Instance API
+      x-openapi-router-controller: openapi_server.controllers.types_controller
+    post:
+      tags:
+      - types
+      summary: Add a new instance type in a specific MEC
+      operationId: post_type
+      parameters:
+      - name: mec_id
+        in: path
+        description: Specify the MEC id to get the information from a specific server
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: Type object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstanceType'
+        required: true
+        x-body-name: payload
+      responses:
+        "200":
+          description: Instance type successfully added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstanceType'
+        "400":
+          description: Invalid instance type
+        "402":
+          description: The instance type already exists
+        "414":
+          description: Edge server not found
+        "415":
+          description: Edge Instance API not avalaible in specified server
+        "510":
+          description: Failed to establish connection with Edge Instance API
+      x-openapi-router-controller: openapi_server.controllers.types_controller
+  /mecs/{mec_id}/types/{type_id}:
+    get:
+      tags:
+      - types
+      summary: Get an instance type in a specific MEC
+      operationId: get_type
+      parameters:
+      - name: mec_id
+        in: path
+        description: Specify the MEC id to get the information from a specific server
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: type_id
+        in: path
+        description: Specify the type id to get information about the instance type
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstanceType'
+        "400":
+          description: Invalid instance type
+        "404":
+          description: Instance type not found
+        "414":
+          description: Edge server not found
+        "415":
+          description: Edge Instance API not avalaible in specified server
+        "510":
+          description: Failed to establish connection with Edge Instance API
+      x-openapi-router-controller: openapi_server.controllers.types_controller
+    delete:
+      tags:
+      - types
+      summary: Delete an instance type in a specific MEC
+      operationId: delete_type
+      parameters:
+      - name: mec_id
+        in: path
+        description: Specify the MEC id to get the information from a specific server
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: type_id
+        in: path
+        description: Specify the type id to delete the instance type
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Instance type successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstanceType'
+        "400":
+          description: Invalid instance type
+        "404":
+          description: Instance type not found
+        "414":
+          description: Edge server not found
+        "415":
+          description: Edge Instance API not avalaible in specified server
+        "510":
+          description: Failed to establish connection with Edge Instance API
+      x-openapi-router-controller: openapi_server.controllers.types_controller
+    patch:
+      tags:
+      - types
+      summary: Update an instance type in a specific MEC
+      operationId: patch_type
+      parameters:
+      - name: mec_id
+        in: path
+        description: Specify the MEC id to get the information from a specific server
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: type_id
+        in: path
+        description: Specify the type id to modify the instance type and/or the resources
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstanceType'
+        required: true
+        x-body-name: payload
+      responses:
+        "200":
+          description: Instance type successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstanceType'
+        "400":
+          description: Invalid instance type
+        "404":
+          description: Instance type not found
+        "414":
+          description: Edge server not found
+        "415":
+          description: Edge Instance API not avalaible in specified server
+        "510":
+          description: Failed to establish connection with Edge Instance API
+      x-openapi-router-controller: openapi_server.controllers.types_controller
+  /mecs/{mec_id}/instances:
+    get:
+      tags:
+      - instances
+      summary: Get the deployed instances in a specific MEC
+      operationId: get_instances
+      parameters:
+      - name: mec_id
+        in: path
+        description: Specify the MEC id to get the information from a specific server
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instance'
+        "414":
+          description: Edge server not found
+        "415":
+          description: Edge Instance API not avalaible in specified server
+        "510":
+          description: Failed to establish connection with Edge Instance API
+      x-openapi-router-controller: openapi_server.controllers.instances_controller
+    post:
+      tags:
+      - instances
+      summary: Deploy a pipeline instance in a specific MEC
+      operationId: post_instance
+      parameters:
+      - name: mec_id
+        in: path
+        description: Specify the MEC id to get the information from a specific server
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Instance'
+        required: true
+        x-body-name: payload
+      responses:
+        "200":
+          description: Reservation successfully made
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instance'
+        "400":
+          description: Invalid instance
+        "404":
+          description: The selected instance type is not available on this Edge server
+        "405":
+          description: The selected datatype is not available on this Edge server
+        "414":
+          description: Edge server not found
+        "415":
+          description: Edge Instance API not avalaible in specified server
+        "501":
+          description: There are no enough resources to deploy the instance
+        "502":
+          description: Error orchestrating the pipeline instance
+        "510":
+          description: Failed to establish connection with Edge Instance API
+      x-openapi-router-controller: openapi_server.controllers.instances_controller
+  /mecs/{mec_id}/instances/{instance_id}:
+    get:
+      tags:
+      - instances
+      summary: Get a specific instance information in a specific MEC
+      operationId: get_instance
+      parameters:
+      - name: mec_id
+        in: path
+        description: Specify the MEC id to get the information from a specific server
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: instance_id
+        in: path
+        description: Specify the instance ID to get the information
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instance'
+        "400":
+          description: Invalid instance
+        "404":
+          description: Instance not found
+        "414":
+          description: Edge server not found
+        "415":
+          description: Edge Instance API not avalaible in specified server
+        "510":
+          description: Failed to establish connection with Edge Instance API
+      x-openapi-router-controller: openapi_server.controllers.instances_controller
+    delete:
+      tags:
+      - instances
+      summary: Delete an instance in a specific MEC
+      operationId: delete_instance
+      parameters:
+      - name: mec_id
+        in: path
+        description: Specify the MEC id to get the information from a specific server
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: instance_id
+        in: path
+        description: Specify the instance ID to delete the pipeline instance
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Instance successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instance'
+        "400":
+          description: Invalid instance
+        "404":
+          description: Instance not found
+        "414":
+          description: Edge server not found
+        "415":
+          description: Edge Instance API not avalaible in specified server
+        "510":
+          description: Failed to establish connection with Edge Instance API
+      x-openapi-router-controller: openapi_server.controllers.instances_controller
+components:
+  schemas:
+    InstanceType:
+      title: InstanceType
+      required:
+      - cpu
+      - gpu
+      - memory
+      - type_name
+      type: object
+      properties:
+        type_name:
+          type: string
+          description: Instance Type
+        cpu:
+          type: integer
+          description: CPU number
+          format: int64
+        memory:
+          type: integer
+          description: Total memory in GB
+          format: int64
+        gpu:
+          type: boolean
+          description: GPU available
+      example:
+        type_name: medium
+        cpu: 4
+        memory: 4
+        gpu: false
+      xml:
+        name: type
+    Instance:
+      title: Instance
+      required:
+      - datatype
+      - instance_type
+      - username
+      type: object
+      properties:
+        datatype:
+          type: string
+          description: Requested datatype
+        instance_type:
+          type: string
+          description: Requested instance type
+        username:
+          type: string
+          description: 5GMETA platform's client username
+      example:
+        datatype: cits
+        instance_type: medium
+        username: 5gmeta_user
+  responses:
+    MaskError:
+      description: When any error occurs on mask
+      content: {}
+    ParseError:
+      description: When a mask can't be parsed
+      content: {}
+  securitySchemes:
+    auth:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: http://192.168.15.175:8080/auth/realms/5gmeta/protocol/openid-connect/auth
+          tokenUrl: http://192.168.15.175:8080/auth/realms/5gmeta/protocol/openid-connect/token
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+      x-tokenInfoFunc: swagger_server.controllers.authorization_controller.check_auth
+      x-scopeValidateFunc: swagger_server.controllers.authorization_controller.validate_scope_auth
+

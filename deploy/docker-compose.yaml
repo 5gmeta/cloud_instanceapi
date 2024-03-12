@@ -1,0 +1,8 @@
+version: '3.1'
+services:
+
+  cloudinstance-api:
+    container_name: cloudinstance-api
+    build: ../api/cloudinstance-api/
+    network_mode: "host"
+    restart: on-failure
